@@ -1,0 +1,71 @@
+# Built application files
+*.apk
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+build/
+app/build/
+
+# Gradle files
+.gradle/
+build/
+/*/build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log Files
+*.log
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# Android Studio captures folder
+captures/
+
+# IntelliJ
+*.iml
+.idea/
+!.idea/codeStyles/
+!.idea/vcs.xml
+!.idea/misc.xml
+
+# Keystore files (NUNCA commitar chaves de assinatura)
+*.jks
+*.keystore
+
+# External native build folder generated in Android Studio 2.2 and later
+.externalNativeBuild/
+.cxx/
+
+# Dados Sensíveis / Firebase
+google-services.json
+app/google-services.json
+GoogleService-Info.plist
+*.pem
+*.key
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
+
+# Scratch files and Legacy Agents Configuration
+countries.json
+generate_countries.py
+.agents/rules/flutter-dart-conventions.md
+.agents/rules/flutter-reviewer.md
+.agents/rules/github-actions-for-flutter.md
