@@ -28,12 +28,21 @@ import androidx.compose.ui.platform.LocalView
 import android.app.Activity
 import androidx.compose.ui.graphics.toArgb
 
+import com.example.chinesonline.ChinesOnlineApplication
+import com.example.chinesonline.feature_quiz.data.QuestionResponse
+import androidx.compose.ui.platform.LocalContext
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizScreen(
-    viewModel: QuizViewModel = viewModel(),
     onNavigateBack: () -> Unit
 ) {
+    val context = LocalContext.current
+    val appContainer = (context.applicationContext as ChinesOnlineApplication).container
+    val viewModel: QuizViewModel = viewModel(
+        factory = QuizViewModel.provideFactory(appContainer.quizRepository)
+    )
+    
     val uiState by viewModel.uiState.collectAsState()
     val feedbackState by viewModel.feedbackState.collectAsState()
     val currentXp by viewModel.currentXp.collectAsState()
@@ -81,19 +90,28 @@ fun QuizScreen(
         ) {
             when (uiState) {
                 QuizState.LOADING -> LoadingState()
-                QuizState.GAMEPLAY -> GameplayState(
-                    xp = currentXp,
-                    score = currentScore,
-                    level = currentLevel,
-                    feedbackState = feedbackState,
-                    onSubmitAnswer = { viewModel.submitAnswer(it) }
-                )
+                QuizState.GAMEPLAY -> {
+                    val question by viewModel.currentQuestion.collectAsState()
+                    question?.let { q ->
+                        GameplayState(
+                            xp = currentXp,
+                            score = currentScore,
+                            level = currentLevel,
+                            question = q,
+                            feedbackState = feedbackState,
+                            onSubmitAnswer = { viewModel.submitAnswer(it) }
+                        )
+                    }
+                }
                 QuizState.END_GAME -> EndGameState(
                     levelUp = levelUp,
                     level = currentLevel,
                     xpGained = 60, // Mock
                     onNewRound = { viewModel.startGame() }
                 )
+                QuizState.ERROR -> Box(Modifier.fillMaxSize(), Alignment.Center) {
+                    Text("Erro ao carregar o jogo", color = Color.White)
+                }
             }
         }
     }
@@ -115,6 +133,7 @@ fun GameplayState(
     xp: Int,
     score: Int,
     level: Int,
+    question: QuestionResponse,
     feedbackState: FeedbackState,
     onSubmitAnswer: (String) -> Unit
 ) {
@@ -228,7 +247,7 @@ fun GameplayState(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "好",
+                text = question.character,
                 fontSize = 80.sp,
                 color = Color.Black
             )
@@ -350,13 +369,13 @@ fun GameplayState(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "好",
+                            text = question.character,
                             fontSize = 28.sp,
                             color = Color.Black.copy(alpha = 0.87f)
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "hǎo",
+                            text = question.pinyin,
                             fontFamily = VendSansFontFamily,
                             fontStyle = FontStyle.Italic,
                             fontWeight = FontWeight.W600,
@@ -365,7 +384,7 @@ fun GameplayState(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Bom, Bem",
+                            text = question.translation,
                             fontFamily = VendSansFontFamily,
                             fontStyle = FontStyle.Italic,
                             fontWeight = FontWeight.W300,

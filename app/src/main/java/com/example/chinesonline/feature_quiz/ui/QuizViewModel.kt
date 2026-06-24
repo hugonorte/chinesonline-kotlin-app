@@ -1,35 +1,42 @@
 package com.example.chinesonline.feature_quiz.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.chinesonline.core.utils.HashUtils
+import com.example.chinesonline.feature_quiz.data.QuestionResponse
+import com.example.chinesonline.feature_quiz.data.QuizRepository
+import com.example.chinesonline.feature_quiz.data.SessionResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 enum class QuizState {
-    LOADING, GAMEPLAY, END_GAME
+    LOADING, GAMEPLAY, END_GAME, ERROR
 }
 
 enum class FeedbackState {
     NONE, CORRECT, INCORRECT
 }
 
-class QuizViewModel : ViewModel() {
+class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(QuizState.LOADING)
     val uiState: StateFlow<QuizState> = _uiState.asStateFlow()
 
     private val _feedbackState = MutableStateFlow(FeedbackState.NONE)
     val feedbackState: StateFlow<FeedbackState> = _feedbackState.asStateFlow()
 
-    private val _currentXp = MutableStateFlow(120)
+    private val _currentXp = MutableStateFlow(0)
     val currentXp: StateFlow<Int> = _currentXp.asStateFlow()
 
     private val _currentScore = MutableStateFlow(0)
     val currentScore: StateFlow<Int> = _currentScore.asStateFlow()
 
-    private val _currentLevel = MutableStateFlow(2)
+    private val _currentLevel = MutableStateFlow(1)
     val currentLevel: StateFlow<Int> = _currentLevel.asStateFlow()
 
     private val _roundCount = MutableStateFlow(1)
@@ -37,51 +44,95 @@ class QuizViewModel : ViewModel() {
 
     private val _levelUp = MutableStateFlow(false)
     val levelUp: StateFlow<Boolean> = _levelUp.asStateFlow()
+    
+    private var currentSession: SessionResponse? = null
+    private var currentQuestions: List<QuestionResponse> = emptyList()
+    private val userAnswers = mutableMapOf<String, String>()
+    
+    private val _currentQuestion = MutableStateFlow<QuestionResponse?>(null)
+    val currentQuestion: StateFlow<QuestionResponse?> = _currentQuestion.asStateFlow()
 
-    init {
-        _uiState.value = QuizState.GAMEPLAY
-    }
+    private var token = "DUMMY_TOKEN"
 
-    fun startGame() {
+    fun startGame(gameType: String = "pinyin_without_tone") {
         viewModelScope.launch {
             _uiState.value = QuizState.LOADING
             _feedbackState.value = FeedbackState.NONE
             _roundCount.value = 1
-            _currentScore.value = 0
             _levelUp.value = false
-            _uiState.value = QuizState.GAMEPLAY
+            userAnswers.clear()
+            
+            try {
+                val session = repository.getNewSession(token, _currentLevel.value, gameType)
+                currentSession = session
+                currentQuestions = session.questions
+                _currentScore.value = 0
+                _currentXp.value = session.totalScore
+                _currentLevel.value = session.level
+                
+                if (currentQuestions.isNotEmpty()) {
+                    _currentQuestion.value = currentQuestions[0]
+                    _uiState.value = QuizState.GAMEPLAY
+                } else {
+                    _uiState.value = QuizState.ERROR
+                }
+            } catch (e: Exception) {
+                _uiState.value = QuizState.ERROR
+            }
         }
     }
 
     fun submitAnswer(answer: String) {
         if (_feedbackState.value != FeedbackState.NONE) return
+        val question = _currentQuestion.value ?: return
 
         viewModelScope.launch {
-            // Mock: Se resposta for "hao", é correto. Senão, incorreto.
-            val isCorrect = answer.trim().lowercase() == "hao"
+            val isCorrect = withContext(Dispatchers.Default) {
+                val hashed = HashUtils.sha256(answer.trim() + question.salt)
+                hashed == question.hash
+            }
             
+            userAnswers[question.id.toString()] = answer.trim()
+
             if (isCorrect) {
                 _feedbackState.value = FeedbackState.CORRECT
-                _currentXp.value += 20
-                _currentScore.value += 100
             } else {
                 _feedbackState.value = FeedbackState.INCORRECT
             }
+            
+            val gameType = "pinyin_without_tone"
+            repository.updateLocalStat(question.id, gameType, isCorrect)
 
-            delay(2500) // Mostra o feedback por 2.5s
+            delay(2500)
 
-            if (_roundCount.value >= 3) {
-                // Fim de jogo
-                if (_currentScore.value >= 200) {
-                    _levelUp.value = true
-                    _currentLevel.value += 1
+            if (_roundCount.value >= currentQuestions.size) {
+                _uiState.value = QuizState.LOADING
+                try {
+                    val result = repository.submitSession(token, currentSession!!.sessionId.toString(), userAnswers)
+                    _currentScore.value = result.score
+                    _currentXp.value = result.totalScore
+                    _currentLevel.value = result.currentLevel
+                    _levelUp.value = result.leveledUp
+                    _uiState.value = QuizState.END_GAME
+                } catch (e: Exception) {
+                    _uiState.value = QuizState.ERROR
                 }
-                _uiState.value = QuizState.END_GAME
             } else {
-                // Próxima rodada
+                val nextIndex = _roundCount.value
+                _currentQuestion.value = currentQuestions[nextIndex]
                 _roundCount.value += 1
                 _feedbackState.value = FeedbackState.NONE
             }
         }
+    }
+    
+    companion object {
+        fun provideFactory(repository: QuizRepository): ViewModelProvider.Factory = 
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return QuizViewModel(repository) as T
+                }
+            }
     }
 }

@@ -1,14 +1,15 @@
 # Skill: Generate Code
 
 ## Objective
-Your goal as the Full-Stack Engineer is to write the physical code based entirely on the PM's approved specification.
+Your goal as the Android Engineer is to write the physical Kotlin/Compose code iteratively, based entirely on the PM's approved specification and following the rigid TDD workflow.
 
 ## Rules of Engagement
-- **Dynamic Coding**: You are not limited to HTML/JS. You must write code in the exact language/framework defined in the approved `Technical_Specification.md`.
-- **Save Location**: Save all your raw code, accurately retaining necessary folder structures, directly inside `src/`.
+- **Iterative Coding (No Massive Dumps)**: Do NOT generate all core application files at once. Generate code incrementally, component by component, keeping the Red-Green-Refactor cycles short.
+- **Android Native Framework**: Write code strictly in Kotlin using Jetpack Compose for UI. Respect Android architectural patterns (MVVM, Clean Architecture, Unidirectional Data Flow).
+- **Save Location**: Save your raw code inside the correct `app/src/main/` or `app/src/test/` directories, accurately retaining necessary package structures (e.g., `com.example.chinesonline...`).
 
 ## Instructions
-1. **Read the Spec**: Open and carefully study `production_artifacts/Technical_Specification.md`.
-2. **Scaffold Structure**: Generate all core Mobile App application files.
-3. **Output**: Dump your code perfectly into the `src/` directory. Do not skip or summarize any code blocks. 
-4. You may eventually need to edit the Flutter Test.config.ts, pubspec.yaml, and Flutter Integration Test.config.ts files
+1. **Read the Spec**: Open and carefully study `Technical_Specification.md` and identify the current specific component you are implementing.
+2. **Implement in the Green Phase**: If you are generating implementation code, ensure you have already written the corresponding test and verified its failure. Generate ONLY the code necessary to make the current failing test pass.
+3. **Android Configuration**: When updating configurations, only modify Gradle files (`build.gradle.kts`, `libs.versions.toml`), `AndroidManifest.xml`, or Android resources (`res/`). **NEVER** edit or look for `pubspec.yaml` or Flutter config files, as this is a Kotlin native project.
+4. **Output**: Output your Kotlin code correctly into the respective files. Ensure imports for `androidx.compose.*`, `kotlinx.coroutines.*`, and other standard Android libraries are accurate.
