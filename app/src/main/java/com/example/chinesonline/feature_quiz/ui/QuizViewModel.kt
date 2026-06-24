@@ -52,8 +52,6 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
     private val _currentQuestion = MutableStateFlow<QuestionResponse?>(null)
     val currentQuestion: StateFlow<QuestionResponse?> = _currentQuestion.asStateFlow()
 
-    private var token = "DUMMY_TOKEN"
-
     fun startGame(gameType: String = "pinyin_without_tone") {
         viewModelScope.launch {
             _uiState.value = QuizState.LOADING
@@ -63,7 +61,7 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
             userAnswers.clear()
             
             try {
-                val session = repository.getNewSession(token, _currentLevel.value, gameType)
+                val session = repository.getNewSession(_currentLevel.value, gameType)
                 currentSession = session
                 currentQuestions = session.questions
                 _currentScore.value = 0
@@ -77,6 +75,7 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
                     _uiState.value = QuizState.ERROR
                 }
             } catch (e: Exception) {
+                android.util.Log.e("QuizViewModel", "Erro ao buscar sessão", e)
                 _uiState.value = QuizState.ERROR
             }
         }
@@ -108,7 +107,7 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
             if (_roundCount.value >= currentQuestions.size) {
                 _uiState.value = QuizState.LOADING
                 try {
-                    val result = repository.submitSession(token, currentSession!!.sessionId.toString(), userAnswers)
+                    val result = repository.submitSession(currentSession!!.sessionId.toString(), userAnswers)
                     _currentScore.value = result.score
                     _currentXp.value = result.totalScore
                     _currentLevel.value = result.currentLevel

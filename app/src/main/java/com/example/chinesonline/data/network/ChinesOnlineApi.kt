@@ -17,25 +17,20 @@ data class SyncRequest(
 interface ChinesOnlineApi {
     @POST("users/sync")
     suspend fun syncUser(
-        @Header("Authorization") token: String,
         @Body request: SyncRequest
     )
 
     @POST("auth/login")
-    suspend fun login(
-        @Header("Authorization") token: String
-    )
+    suspend fun login()
 
     @retrofit2.http.GET("sessions/new")
     suspend fun getNewSession(
-        @Header("Authorization") token: String,
         @retrofit2.http.Query("level") level: Int,
         @retrofit2.http.Query("game_type") gameType: String?
     ): com.example.chinesonline.feature_quiz.data.SessionResponse
 
     @POST("sessions/{id}/submit")
     suspend fun submitSession(
-        @Header("Authorization") token: String,
         @retrofit2.http.Path("id") sessionId: String,
         @Body request: com.example.chinesonline.feature_quiz.data.SubmitSessionRequest
     ): com.example.chinesonline.feature_quiz.data.SubmitSessionResponse

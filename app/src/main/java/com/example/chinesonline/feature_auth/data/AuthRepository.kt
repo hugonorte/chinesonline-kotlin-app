@@ -16,7 +16,7 @@ class AuthRepository {
             val token = result.user?.getIdToken(true)?.await()?.token
             if (token != null) {
                 // Notificando backend via Go API
-                api.login("Bearer $token")
+                api.login()
                 Result.success("Login Realizado com Sucesso")
             } else {
                 Result.failure(Exception("Falha ao obter token JWT"))
@@ -45,7 +45,7 @@ class AuthRepository {
                     accountType = 0, // 0 = Padrão (Free)
                     birthDate = birthDate
                 )
-                api.syncUser("Bearer $token", request)
+                api.syncUser(request)
                 Result.success("SUCESSO")
             } else {
                 Result.failure(Exception("Falha ao obter token JWT"))

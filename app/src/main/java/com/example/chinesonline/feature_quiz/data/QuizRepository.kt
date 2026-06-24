@@ -8,13 +8,13 @@ class QuizRepository(
     private val api: ChinesOnlineApi,
     private val dao: IdeogramStatDao
 ) {
-    suspend fun getNewSession(token: String, level: Int, gameType: String): SessionResponse {
-        val session = api.getNewSession("Bearer $token", level, gameType)
+    suspend fun getNewSession(level: Int, gameType: String): SessionResponse {
+        val session = api.getNewSession(level, gameType)
         return session
     }
 
-    suspend fun submitSession(token: String, sessionId: String, answers: Map<String, String>): SubmitSessionResponse {
-        return api.submitSession("Bearer $token", sessionId, SubmitSessionRequest(answers))
+    suspend fun submitSession(sessionId: String, answers: Map<String, String>): SubmitSessionResponse {
+        return api.submitSession(sessionId, SubmitSessionRequest(answers))
     }
 
     suspend fun updateLocalStat(ideogramId: Int, gameType: String, isCorrect: Boolean) {

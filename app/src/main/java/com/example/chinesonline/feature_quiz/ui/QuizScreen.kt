@@ -58,6 +58,10 @@ fun QuizScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.startGame()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(

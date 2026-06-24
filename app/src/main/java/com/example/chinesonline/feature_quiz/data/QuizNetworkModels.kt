@@ -12,7 +12,7 @@ data class QuestionResponse(
 )
 
 data class SessionResponse(
-    @SerializedName("session_id") val sessionId: Int,
+    @SerializedName("session_id") val sessionId: String,
     @SerializedName("total_score") val totalScore: Int,
     @SerializedName("level") val level: Int,
     @SerializedName("questions") val questions: List<QuestionResponse>

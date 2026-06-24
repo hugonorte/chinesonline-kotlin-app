@@ -58,11 +58,7 @@ android {
     }
 }
 
-androidComponents {
-    beforeVariants(selector().withBuildType("release")) { variantBuilder ->
-        variantBuilder.enableUnitTest = false
-    }
-}
+
 
 dependencies {
     // AndroidX Core & Lifecycle
@@ -97,6 +93,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
+    implementation("com.google.firebase:firebase-appcheck-debug")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
