@@ -58,6 +58,31 @@ fun QuizScreen(
         }
     }
 
+    val tts = remember(context) {
+        var ttsInstance: android.speech.tts.TextToSpeech? = null
+        ttsInstance = android.speech.tts.TextToSpeech(context) { status ->
+            if (status == android.speech.tts.TextToSpeech.SUCCESS) {
+                ttsInstance?.language = java.util.Locale.CHINESE
+            }
+        }
+        ttsInstance
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            tts?.stop()
+            tts?.shutdown()
+        }
+    }
+
+    LaunchedEffect(feedbackState) {
+        if (feedbackState == FeedbackState.CORRECT) {
+            val mp = android.media.MediaPlayer.create(context, com.example.chinesonline.R.raw.som_acerto)
+            mp?.start()
+            mp?.setOnCompletionListener { it.release() }
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.startGame()
     }
@@ -103,7 +128,10 @@ fun QuizScreen(
                             level = currentLevel,
                             question = q,
                             feedbackState = feedbackState,
-                            onSubmitAnswer = { viewModel.submitAnswer(it) }
+                            onSubmitAnswer = { viewModel.submitAnswer(it) },
+                            onSpeakRequest = {
+                                tts?.speak(q.character, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, null)
+                            }
                         )
                     }
                 }
@@ -139,7 +167,8 @@ fun GameplayState(
     level: Int,
     question: QuestionResponse,
     feedbackState: FeedbackState,
-    onSubmitAnswer: (String) -> Unit
+    onSubmitAnswer: (String) -> Unit,
+    onSpeakRequest: () -> Unit
 ) {
     var answerText by remember { mutableStateOf("") }
     
@@ -353,12 +382,16 @@ fun GameplayState(
                         .background(cardColor, RoundedCornerShape(8.dp))
                         .padding(16.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                        contentDescription = "Ouvir",
-                        tint = Color.Black,
+                    IconButton(
+                        onClick = onSpeakRequest,
                         modifier = Modifier.align(Alignment.TopEnd)
-                    )
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            contentDescription = "Ouvir",
+                            tint = Color.Black
+                        )
+                    }
                     
                     Column(
                         modifier = Modifier.fillMaxWidth(),

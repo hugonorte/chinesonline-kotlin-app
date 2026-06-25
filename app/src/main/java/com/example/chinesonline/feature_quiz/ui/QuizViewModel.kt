@@ -94,13 +94,14 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
             userAnswers[question.id.toString()] = answer.trim()
 
             if (isCorrect) {
+                _currentScore.value += 10
                 _feedbackState.value = FeedbackState.CORRECT
             } else {
                 _feedbackState.value = FeedbackState.INCORRECT
             }
             
             val gameType = "pinyin_without_tone"
-            repository.updateLocalStat(question.id, gameType, isCorrect)
+            repository.updateLocalStat(question, gameType, isCorrect)
 
             delay(2500)
 
