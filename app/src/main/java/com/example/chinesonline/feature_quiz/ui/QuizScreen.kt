@@ -27,6 +27,12 @@ import com.example.chinesonline.core.ui.theme.*
 import androidx.compose.ui.platform.LocalView
 import android.app.Activity
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.alpha
+import com.example.chinesonline.R
 
 import com.example.chinesonline.ChinesOnlineApplication
 import com.example.chinesonline.feature_quiz.data.QuestionResponse
@@ -65,13 +71,13 @@ fun QuizScreen(
                 ttsInstance?.language = java.util.Locale.CHINESE
             }
         }
-        ttsInstance
+        ttsInstance!!
     }
 
     DisposableEffect(Unit) {
         onDispose {
-            tts?.stop()
-            tts?.shutdown()
+            tts.stop()
+            tts.shutdown()
         }
     }
 
@@ -130,7 +136,7 @@ fun QuizScreen(
                             feedbackState = feedbackState,
                             onSubmitAnswer = { viewModel.submitAnswer(it) },
                             onSpeakRequest = {
-                                tts?.speak(q.character, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, null)
+                                tts.speak(q.character, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, null)
                             }
                         )
                     }
@@ -442,11 +448,54 @@ fun EndGameState(
     xpGained: Int,
     onNewRound: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        SplashGradientStart,
+                        SplashGradientCenter,
+                        SplashGradientEnd
+                    )
+                )
+            )
+            .padding(10.dp)
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.corner_inset),
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.TopStart)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.corner_inset),
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.TopEnd).rotate(90f)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.corner_inset),
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.BottomEnd).rotate(180f)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.corner_inset),
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.BottomStart).rotate(270f)
+        )
+
+        Image(
+            painter = painterResource(id = R.drawable.dragon_circle),
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.Center).alpha(0.15f)
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom
+        ) {
         if (levelUp) {
             Icon(
                 imageVector = Icons.Filled.Star,
@@ -497,3 +546,5 @@ fun EndGameState(
         }
     }
 }
+}
+
