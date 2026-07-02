@@ -7,8 +7,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel : ViewModel() {
-    private val repo = AuthRepository()
+class AuthViewModel(
+    private val repo: AuthRepository = AuthRepository()
+) : ViewModel() {
 
     private val _loginState = MutableStateFlow<String?>(null)
     val loginState: StateFlow<String?> = _loginState
@@ -50,5 +51,39 @@ class AuthViewModel : ViewModel() {
     
     fun clearState() {
         _loginState.value = null
+        _forgotPasswordSuccess.value = false
+        _resetPasswordSuccess.value = false
+    }
+
+    private val _forgotPasswordSuccess = MutableStateFlow(false)
+    val forgotPasswordSuccess: StateFlow<Boolean> = _forgotPasswordSuccess
+
+    fun doSendPasswordResetEmail(email: String) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            val result = repo.sendPasswordResetEmail(email)
+            _isLoading.value = false
+            result.onSuccess {
+                _forgotPasswordSuccess.value = true
+            }.onFailure {
+                _loginState.value = it.message
+            }
+        }
+    }
+
+    private val _resetPasswordSuccess = MutableStateFlow(false)
+    val resetPasswordSuccess: StateFlow<Boolean> = _resetPasswordSuccess
+
+    fun doConfirmPasswordReset(code: String, newPassword: String) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            val result = repo.confirmPasswordReset(code, newPassword)
+            _isLoading.value = false
+            result.onSuccess {
+                _resetPasswordSuccess.value = true
+            }.onFailure {
+                _loginState.value = it.message
+            }
+        }
     }
 }

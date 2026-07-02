@@ -10,12 +10,49 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import com.example.chinesonline.R
+import com.example.chinesonline.core.data.local.AppDatabase
+import com.example.chinesonline.core.data.local.LocalIdeogramStat
+import com.example.chinesonline.core.utils.HashUtils
+import kotlinx.coroutines.runBlocking
 
 @RunWith(RobolectricTestRunner::class)
 class QuizScreenTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+    @org.junit.Before
+    fun setupDb() {
+        val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        if (com.google.firebase.FirebaseApp.getApps(context).isEmpty()) {
+            com.google.firebase.FirebaseApp.initializeApp(context)
+        }
+        val db = AppDatabase.getDatabase(context)
+        val dao = db.ideogramStatDao()
+        runBlocking {
+            for (i in 1..10) {
+                dao.upsertStat(
+                    LocalIdeogramStat(
+                        id = "${i}_pinyin_without_tone",
+                        ideogramId = i,
+                        gameType = "pinyin_without_tone",
+                        character = "好",
+                        pinyin = "hao",
+                        translation = "good",
+                        salt = "abc",
+                        hash = HashUtils.sha256("haoabc"),
+                        correctAttempts = 0,
+                        wrongAttempts = 0,
+                        lastReviewed = 0L,
+                        interval = 0,
+                        easeFactor = 2.5f,
+                        nextReviewAt = 0L
+                    )
+                )
+            }
+        }
+    }
 
     @Test
     fun quizScreen_gameplayRendersCorrectly() {
@@ -28,12 +65,12 @@ class QuizScreenTest {
         // mas o composeTestRule aguarda a UI ficar "Idle" se configurado corretamente.
 
         composeTestRule.waitUntil(timeoutMillis = 5000) {
-            composeTestRule.onAllNodes(androidx.compose.ui.test.hasText("SCORE")).fetchSemanticsNodes().isNotEmpty()
+            composeTestRule.onAllNodes(androidx.compose.ui.test.hasText(composeTestRule.activity.getString(R.string.score_label))).fetchSemanticsNodes().isNotEmpty()
         }
 
-        composeTestRule.onNodeWithText("SCORE").assertExists()
-        composeTestRule.onNodeWithText("NÍVEL").assertExists()
-        composeTestRule.onNodeWithText("Que ideograma é esse?").assertExists()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.score_label)).assertExists()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.level_label)).assertExists()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.question_title)).assertExists()
         composeTestRule.onNodeWithText("好").assertExists()
     }
 
@@ -44,15 +81,15 @@ class QuizScreenTest {
         }
 
         composeTestRule.waitUntil(timeoutMillis = 5000) {
-            composeTestRule.onAllNodes(androidx.compose.ui.test.hasText("SCORE")).fetchSemanticsNodes().isNotEmpty()
+            composeTestRule.onAllNodes(androidx.compose.ui.test.hasText(composeTestRule.activity.getString(R.string.score_label))).fetchSemanticsNodes().isNotEmpty()
         }
 
         // Input
-        composeTestRule.onNodeWithText("Digite aqui o pin yin").performTextInput("hao")
-        composeTestRule.onNodeWithText("Enviar").performClick()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.pinyin_placeholder)).performTextInput("hao")
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.submit_button)).performClick()
 
         // Após Enviar, o card de feedback deve aparecer
-        composeTestRule.onNodeWithText("Correto!").assertExists()
-        composeTestRule.onNodeWithText("+ 20 pts").assertExists()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.correct_feedback)).assertExists()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.points_earned, 20)).assertExists()
     }
 }

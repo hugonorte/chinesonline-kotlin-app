@@ -26,6 +26,9 @@ fun AppNavigation() {
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },
+                onNavigateToForgotPassword = {
+                    navController.navigate("forgot_password")
+                },
                 onNavigateToHome = {
                     navController.navigate("quiz") { popUpTo("login") { inclusive = true } }
                 }
@@ -35,11 +38,39 @@ fun AppNavigation() {
             RegisterScreen(
                 onNavigateToLogin = {
                     navController.popBackStack("login", false)
-                },
-                onNavigateToHome = {
-                    navController.navigate("quiz") { popUpTo("login") { inclusive = true } }
                 }
             )
+        }
+        composable("forgot_password") {
+            com.example.chinesonline.feature_auth.ui.ForgotPasswordScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(
+            route = "reset_password?mode={mode}&oobCode={oobCode}",
+            deepLinks = listOf(
+                androidx.navigation.navDeepLink {
+                    uriPattern = "https://chinesonline-prod.firebaseapp.com/__/auth/action?mode={mode}&oobCode={oobCode}"
+                }
+            )
+        ) { backStackEntry ->
+            val mode = backStackEntry.arguments?.getString("mode")
+            val oobCode = backStackEntry.arguments?.getString("oobCode")
+            
+            if (mode == "resetPassword" && oobCode != null) {
+                com.example.chinesonline.feature_auth.ui.ResetPasswordScreen(
+                    oobCode = oobCode,
+                    onNavigateToLogin = {
+                        navController.navigate("login") { popUpTo(0) }
+                    }
+                )
+            } else {
+                androidx.compose.runtime.LaunchedEffect(Unit) {
+                    navController.navigate("login") { popUpTo(0) }
+                }
+            }
         }
         composable("quiz") {
             QuizScreen(

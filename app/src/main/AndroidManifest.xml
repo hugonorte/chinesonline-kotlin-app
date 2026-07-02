@@ -8,20 +8,33 @@
     <application
         android:name=".ChinesOnlineApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/ic_launcher"
+        android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        android:theme="@style/Theme.ChinesOnline">
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@android:style/Theme.Material.Light.NoActionBar">
+            android:theme="@style/Theme.ChinesOnline">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            
+            <!-- Firebase Auth Deep Link -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="chinesonline-prod.firebaseapp.com"
+                    android:pathPrefix="/__/auth/action" />
+            </intent-filter>
         </activity>
+        <!-- Required by Robolectric Compose tests for the Release variant -->
+        <activity android:name="androidx.activity.ComponentActivity" android:exported="true" android:theme="@style/Theme.ChinesOnline" />
     </application>
 
 </manifest>

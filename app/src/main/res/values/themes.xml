@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ChinesOnline" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <!-- Define a cor de fundo nativa (antes do Compose carregar) para a cor do meio do nosso degradê -->
+        <item name="android:windowBackground">#A11010</item>
+    </style>
+</resources>

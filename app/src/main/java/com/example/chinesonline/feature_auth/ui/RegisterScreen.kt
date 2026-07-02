@@ -26,13 +26,14 @@ import com.example.chinesonline.core.domain.model.Country
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.ui.res.stringResource
+import com.example.chinesonline.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     viewModel: AuthViewModel = viewModel(),
-    onNavigateToLogin: () -> Unit,
-    onNavigateToHome: () -> Unit
+    onNavigateToLogin: () -> Unit
 ) {
     val errorState by viewModel.loginState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -63,8 +64,8 @@ fun RegisterScreen(
 
     LaunchedEffect(registerSuccess) {
         if (registerSuccess) {
-            delay(2000) // Aguarda 2 segundos
-            onNavigateToHome()
+            delay(3500) // Aguarda 3.5 segundos para o usuário ler a mensagem longa
+            onNavigateToLogin()
         }
     }
 
@@ -95,13 +96,13 @@ fun RegisterScreen(
             ) {
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
-                    text = "ChinêsOnline",
+                    text = stringResource(id = R.string.app_name),
                     style = MaterialTheme.typography.displayLarge,
                     fontFamily = LobsterFontFamily,
                     color = Color.White
                 )
                 Text(
-                    text = "Cadastro",
+                    text = stringResource(id = R.string.register_button),
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
                     color = Color.White,
@@ -120,7 +121,7 @@ fun RegisterScreen(
                 TextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Nome", color = Color.White) },
+                    label = { Text(stringResource(id = R.string.name_label), color = Color.White) },
                     colors = textFieldColors,
                     modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
                 )
@@ -128,7 +129,7 @@ fun RegisterScreen(
                 TextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("E-mail", color = Color.White) },
+                    label = { Text(stringResource(id = R.string.email_label), color = Color.White) },
                     colors = textFieldColors,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
@@ -148,10 +149,10 @@ fun RegisterScreen(
                                     val sdfDisplay = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                                     birthDateDisplay = sdfDisplay.format(Date(millis))
                                 }
-                            }) { Text("OK", color = Color(0xFF2A7FFF)) }
+                            }) { Text(stringResource(id = R.string.ok_button), color = Color(0xFF2A7FFF)) }
                         },
                         dismissButton = {
-                            TextButton(onClick = { showDatePicker = false }) { Text("Cancelar", color = Color(0xFF2A7FFF)) }
+                            TextButton(onClick = { showDatePicker = false }) { Text(stringResource(id = R.string.cancel_button), color = Color(0xFF2A7FFF)) }
                         },
                         colors = DatePickerDefaults.colors(containerColor = Color.White)
                     ) {
@@ -164,7 +165,7 @@ fun RegisterScreen(
                         value = birthDateDisplay,
                         onValueChange = { },
                         readOnly = true,
-                        label = { Text("Data de Nascimento", color = Color.White) },
+                        label = { Text(stringResource(id = R.string.dob_label), color = Color.White) },
                         colors = textFieldColors,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -184,7 +185,7 @@ fun RegisterScreen(
                         readOnly = true,
                         value = "${selectedCountry.flagEmoji} ${selectedCountry.nativeName}",
                         onValueChange = {},
-                        label = { Text("País", color = Color.White) },
+                        label = { Text(stringResource(id = R.string.country_label), color = Color.White) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                         colors = textFieldColors.copy(
                             focusedTrailingIconColor = Color.White,
@@ -212,7 +213,7 @@ fun RegisterScreen(
                 TextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Senha", color = Color.White) },
+                    label = { Text(stringResource(id = R.string.password_label), color = Color.White) },
                     visualTransformation = PasswordVisualTransformation(),
                     colors = textFieldColors,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -222,7 +223,7 @@ fun RegisterScreen(
                 TextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
-                    label = { Text("Confirmar Senha", color = Color.White) },
+                    label = { Text(stringResource(id = R.string.confirm_password_label), color = Color.White) },
                     visualTransformation = PasswordVisualTransformation(),
                     colors = textFieldColors,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -247,7 +248,7 @@ fun RegisterScreen(
                     if (isLoading) {
                         CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                     } else {
-                        Text("Cadastrar", fontSize = 18.sp)
+                        Text(stringResource(id = R.string.register_button), fontSize = 18.sp)
                     }
                 }
 
@@ -255,9 +256,9 @@ fun RegisterScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Já possui conta? ", color = Color.White, fontSize = 14.sp)
+                    Text(text = stringResource(id = R.string.has_account_text), color = Color.White, fontSize = 14.sp)
                     Text(
-                        text = "Faça Login",
+                        text = stringResource(id = R.string.login_link),
                         color = Color.White,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
@@ -290,11 +291,11 @@ fun RegisterScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.padding(20.dp).fillMaxWidth()
                         ) {
-                            Text("SUCESSO", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(id = R.string.success_title), color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Seu cadastro foi realizado com sucesso!", color = Color.White, fontSize = 16.sp)
+                            Text(stringResource(id = R.string.success_message), color = Color.White, fontSize = 16.sp)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Você será redirecionado para o jogo em alguns segundos", color = Color.White, fontSize = 14.sp)
+                            Text(stringResource(id = R.string.redirect_message), color = Color.White, fontSize = 14.sp)
                         }
                     }
                 }

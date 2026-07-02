@@ -10,6 +10,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import com.example.chinesonline.R
 
 @RunWith(RobolectricTestRunner::class)
 class LoginScreenTest {
@@ -29,17 +30,18 @@ class LoginScreenTest {
         composeTestRule.setContent {
             LoginScreen(
                 onNavigateToRegister = {},
+                onNavigateToForgotPassword = {},
                 onNavigateToHome = {}
             )
         }
 
         // Verifica se os placeholders essenciais estão visíveis
-        composeTestRule.onNodeWithText("E-mail").assertExists()
-        composeTestRule.onNodeWithText("Senha").assertExists()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.email_label)).assertExists()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.password_label)).assertExists()
         
         // Verifica se os botões e links existem
-        composeTestRule.onNodeWithText("Entrar").assertExists()
-        composeTestRule.onNodeWithText("Cadastre-se").assertExists()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.login_button)).assertExists()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.register_link)).assertExists()
     }
 
     @Test
@@ -47,14 +49,15 @@ class LoginScreenTest {
         composeTestRule.setContent {
             LoginScreen(
                 onNavigateToRegister = {},
+                onNavigateToForgotPassword = {},
                 onNavigateToHome = {}
             )
         }
 
-        composeTestRule.onNodeWithText("E-mail").performTextInput("teste@teste.com")
-        composeTestRule.onNodeWithText("Senha").performTextInput("123456")
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.email_label)).performTextInput("teste@teste.com")
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.password_label)).performTextInput("123456")
         
         // Tenta realizar um click para ativar o ViewModel/Loading
-        composeTestRule.onNodeWithText("Entrar").performClick()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.login_button)).performClick()
     }
 }

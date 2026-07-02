@@ -29,6 +29,7 @@ import android.app.Activity
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.alpha
@@ -98,7 +99,7 @@ fun QuizScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "ChinêsOnline",
+                        text = stringResource(id = R.string.app_name),
                         fontFamily = LobsterFontFamily,
                         color = Color.White
                     )
@@ -108,10 +109,10 @@ fun QuizScreen(
                 ),
                 actions = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Sair", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = stringResource(id = R.string.exit_content_desc), tint = Color.White)
                     }
                     IconButton(onClick = { /* Menu */ }) {
-                        Icon(Icons.Filled.Menu, contentDescription = "Menu", tint = Color.White)
+                        Icon(Icons.Filled.Menu, contentDescription = stringResource(id = R.string.menu_content_desc), tint = Color.White)
                     }
                 }
             )
@@ -148,7 +149,7 @@ fun QuizScreen(
                     onNewRound = { viewModel.startGame() }
                 )
                 QuizState.ERROR -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                    Text("Erro ao carregar o jogo", color = Color.White)
+                    Text(stringResource(id = R.string.game_load_error), color = Color.White)
                 }
             }
         }
@@ -201,14 +202,14 @@ fun GameplayState(
             // Lado Esquerdo (Player Info)
             Column {
                 Text(
-                    text = "Jogador",
+                    text = stringResource(id = R.string.player_label),
                     fontFamily = VendSansFontFamily,
                     color = TextXpValue,
                     fontWeight = FontWeight.W400,
                     fontSize = 16.sp
                 )
                 Text(
-                    text = "XP ACUMULADO",
+                    text = stringResource(id = R.string.xp_accumulated_label),
                     fontFamily = SansationFontFamily,
                     color = TextXpLabel,
                     fontWeight = FontWeight.W300,
@@ -227,7 +228,7 @@ fun GameplayState(
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = "SCORE",
+                        text = stringResource(id = R.string.score_label),
                         fontFamily = SansationFontFamily,
                         color = TextScoreLabel,
                         fontWeight = FontWeight.W300,
@@ -243,7 +244,7 @@ fun GameplayState(
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = "NÍVEL",
+                        text = stringResource(id = R.string.level_label),
                         fontFamily = SansationFontFamily,
                         color = TextScoreLabel,
                         fontWeight = FontWeight.W300,
@@ -262,7 +263,7 @@ fun GameplayState(
 
         // Título da Pergunta
         Text(
-            text = "Que ideograma é esse?",
+            text = stringResource(id = R.string.question_title),
             fontFamily = SansationFontFamily,
             color = Color.White.copy(alpha = 0.7f),
             fontWeight = FontWeight.W400,
@@ -306,7 +307,7 @@ fun GameplayState(
                 onValueChange = { answerText = it },
                 placeholder = {
                     Text(
-                        text = "Digite aqui o pin yin",
+                        text = stringResource(id = R.string.pinyin_placeholder),
                         fontFamily = VendSansFontFamily,
                         color = Color.Black.copy(alpha = 0.38f)
                     )
@@ -341,7 +342,7 @@ fun GameplayState(
                 modifier = Modifier.fillMaxHeight()
             ) {
                 Text(
-                    text = "Enviar",
+                    text = stringResource(id = R.string.submit_button),
                     fontFamily = VendSansFontFamily,
                     fontWeight = FontWeight.W400,
                     fontSize = 18.sp
@@ -355,7 +356,7 @@ fun GameplayState(
         if (feedbackState != FeedbackState.NONE) {
             val isCorrect = feedbackState == FeedbackState.CORRECT
             val cardColor = if (isCorrect) QuizCorrectCard else QuizWrongCard
-            val titleText = if (isCorrect) "Correto!" else "Incorreto!"
+            val titleText = if (isCorrect) stringResource(id = R.string.correct_feedback) else stringResource(id = R.string.incorrect_feedback)
             
             Column(
                 modifier = Modifier
@@ -371,7 +372,7 @@ fun GameplayState(
                             .padding(horizontal = 16.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = "+ 20 pts",
+                            text = stringResource(id = R.string.points_earned, 20),
                             color = QuizCorrectChip,
                             fontStyle = FontStyle.Italic,
                             fontWeight = FontWeight.Bold
@@ -394,7 +395,7 @@ fun GameplayState(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                            contentDescription = "Ouvir",
+                            contentDescription = stringResource(id = R.string.listen_content_desc),
                             tint = Color.Black
                         )
                     }
@@ -506,7 +507,7 @@ fun EndGameState(
                     .padding(bottom = 16.dp)
             )
             Text(
-                text = "Parabéns!\nVocê subiu para o Nível $level!",
+                text = stringResource(id = R.string.level_up_message, level),
                 fontFamily = VendSansFontFamily,
                 color = Color(0xFFFFD54F),
                 fontSize = 28.sp,
@@ -516,13 +517,13 @@ fun EndGameState(
             )
         } else {
             Text(
-                text = "Rodada Finalizada!",
+                text = stringResource(id = R.string.round_finished_title),
                 color = Color.White,
                 fontSize = 24.sp,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             Text(
-                text = "Você ganhou +$xpGained XP",
+                text = stringResource(id = R.string.xp_gained_message, xpGained),
                 color = Color.White.copy(alpha = 0.7f),
                 fontSize = 18.sp,
                 modifier = Modifier.padding(bottom = 24.dp)
@@ -539,7 +540,7 @@ fun EndGameState(
             contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
         ) {
             Text(
-                text = "Nova Rodada",
+                text = stringResource(id = R.string.new_round_button),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
