@@ -26,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chinesonline.core.ui.theme.*
 import androidx.compose.ui.platform.LocalView
 import android.app.Activity
+import androidx.core.view.WindowCompat
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
@@ -42,7 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizScreen(
-    onNavigateBack: () -> Unit
+    onLogout: () -> Unit
 ) {
     val context = LocalContext.current
     val appContainer = (context.applicationContext as ChinesOnlineApplication).container
@@ -59,9 +60,11 @@ fun QuizScreen(
 
     val view = LocalView.current
     if (!view.isInEditMode) {
-        SideEffect {
+        DisposableEffect(Unit) {
             val window = (view.context as Activity).window
             window.statusBarColor = Color.Black.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+            onDispose {}
         }
     }
 
@@ -108,11 +111,8 @@ fun QuizScreen(
                     containerColor = Color.Black
                 ),
                 actions = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = onLogout) {
                         Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = stringResource(id = R.string.exit_content_desc), tint = Color.White)
-                    }
-                    IconButton(onClick = { /* Menu */ }) {
-                        Icon(Icons.Filled.Menu, contentDescription = stringResource(id = R.string.menu_content_desc), tint = Color.White)
                     }
                 }
             )

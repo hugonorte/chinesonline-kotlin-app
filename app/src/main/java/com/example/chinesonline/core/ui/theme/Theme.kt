@@ -9,7 +9,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -50,11 +50,13 @@ fun ChinesOnlineTheme(
     
     val view = LocalView.current
     if (!view.isInEditMode) {
-        SideEffect {
+        DisposableEffect(darkTheme) {
             val window = (view.context as Activity).window
             window.statusBarColor = SplashGradientStart.toArgb()
             // Configura para ícones claros (Light) como definido na spec (SystemUI / Status Bar)
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+            
+            onDispose { }
         }
     }
 

@@ -7,7 +7,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.chinesonline.feature_auth.ui.LoginScreen
 import com.example.chinesonline.feature_auth.ui.RegisterScreen
 import com.example.chinesonline.feature_auth.ui.SplashScreen
+import com.example.chinesonline.feature_home.ui.HomeScreen
 import com.example.chinesonline.feature_quiz.ui.QuizScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun AppNavigation() {
@@ -30,7 +32,7 @@ fun AppNavigation() {
                     navController.navigate("forgot_password")
                 },
                 onNavigateToHome = {
-                    navController.navigate("quiz") { popUpTo("login") { inclusive = true } }
+                    navController.navigate("home") { popUpTo("login") { inclusive = true } }
                 }
             )
         }
@@ -72,10 +74,22 @@ fun AppNavigation() {
                 }
             }
         }
+        composable("home") {
+            HomeScreen(
+                onNavigateToQuiz = {
+                    navController.navigate("quiz")
+                },
+                onLogout = {
+                    FirebaseAuth.getInstance().signOut()
+                    navController.navigate("login") { popUpTo(0) }
+                }
+            )
+        }
         composable("quiz") {
             QuizScreen(
-                onNavigateBack = {
-                    navController.navigate("login") { popUpTo("quiz") { inclusive = true } }
+                onLogout = {
+                    FirebaseAuth.getInstance().signOut()
+                    navController.navigate("login") { popUpTo(0) }
                 }
             )
         }

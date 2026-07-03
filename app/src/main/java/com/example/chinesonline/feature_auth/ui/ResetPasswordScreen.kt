@@ -51,9 +51,10 @@ fun ResetPasswordScreen(
 
     val view = LocalView.current
     if (!view.isInEditMode) {
-        SideEffect {
+        DisposableEffect(Unit) {
             val window = (view.context as Activity).window
             window.statusBarColor = SplashGradientStart.toArgb()
+            onDispose {}
         }
     }
 

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.ChinesOnline" parent="@android:style/Theme.Material.Light.NoActionBar">
-        <!-- Define a cor de fundo nativa (antes do Compose carregar) -->
+        <!-- Fundo vermelho escuro para o Splash Screen nativo do Android 12+ -->
+        <item name="android:windowSplashScreenBackground">#560808</item>
         <item name="android:windowBackground">#560808</item>
     </style>
 </resources>

@@ -42,4 +42,6 @@
     <string name="new_password">Nova Senha</string>
     <string name="check_email_reset">Verifique seu e-mail para acessar o link de redefinição.</string>
     <string name="password_reset_success">Senha alterada com sucesso!</string>
+    <string name="welcome_message">Bem-vindo(a),</string>
+    <string name="start_game_button">Iniciar Jogo</string>
 </resources>
