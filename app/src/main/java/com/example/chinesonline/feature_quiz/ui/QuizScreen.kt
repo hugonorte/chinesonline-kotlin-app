@@ -48,7 +48,10 @@ fun QuizScreen(
     val context = LocalContext.current
     val appContainer = (context.applicationContext as ChinesOnlineApplication).container
     val viewModel: QuizViewModel = viewModel(
-        factory = QuizViewModel.provideFactory(appContainer.quizRepository)
+        factory = QuizViewModel.provideFactory(
+            appContainer.quizRepository,
+            appContainer.userPreferencesRepository
+        )
     )
     
     val uiState by viewModel.uiState.collectAsState()
@@ -57,6 +60,9 @@ fun QuizScreen(
     val currentScore by viewModel.currentScore.collectAsState()
     val currentLevel by viewModel.currentLevel.collectAsState()
     val levelUp by viewModel.levelUp.collectAsState()
+
+    val storedName by viewModel.userName.collectAsState()
+    val displayName = storedName?.takeIf { it.isNotBlank() } ?: "Player"
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -133,8 +139,10 @@ fun QuizScreen(
                             xp = currentXp,
                             score = currentScore,
                             level = currentLevel,
+                            userName = displayName,
                             question = q,
                             feedbackState = feedbackState,
+                            pointsPerCorrectAnswer = viewModel.pointsPerCorrectAnswer,
                             onSubmitAnswer = { viewModel.submitAnswer(it) },
                             onSpeakRequest = {
                                 tts.speak(q.character, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, null)
@@ -145,7 +153,7 @@ fun QuizScreen(
                 QuizState.END_GAME -> EndGameState(
                     levelUp = levelUp,
                     level = currentLevel,
-                    xpGained = 60, // Mock
+                    xpGained = currentScore,
                     onNewRound = { viewModel.startGame() }
                 )
                 QuizState.ERROR -> Box(Modifier.fillMaxSize(), Alignment.Center) {
@@ -172,8 +180,10 @@ fun GameplayState(
     xp: Int,
     score: Int,
     level: Int,
+    userName: String,
     question: QuestionResponse,
     feedbackState: FeedbackState,
+    pointsPerCorrectAnswer: Int,
     onSubmitAnswer: (String) -> Unit,
     onSpeakRequest: () -> Unit
 ) {
@@ -202,7 +212,7 @@ fun GameplayState(
             // Lado Esquerdo (Player Info)
             Column {
                 Text(
-                    text = stringResource(id = R.string.player_label),
+                    text = userName,
                     fontFamily = VendSansFontFamily,
                     color = TextXpValue,
                     fontWeight = FontWeight.W400,
@@ -372,7 +382,7 @@ fun GameplayState(
                             .padding(horizontal = 16.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = stringResource(id = R.string.points_earned, 20),
+                            text = stringResource(id = R.string.points_earned, pointsPerCorrectAnswer),
                             color = QuizCorrectChip,
                             fontStyle = FontStyle.Italic,
                             fontWeight = FontWeight.Bold
@@ -546,6 +556,5 @@ fun EndGameState(
             )
         }
     }
+    }
 }
-}
-

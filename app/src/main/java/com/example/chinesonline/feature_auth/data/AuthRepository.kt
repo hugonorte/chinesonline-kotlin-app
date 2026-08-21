@@ -1,16 +1,19 @@
 package com.example.chinesonline.feature_auth.data
 
 import com.example.chinesonline.data.network.ApiClient
+import com.example.chinesonline.data.network.ChinesOnlineApi
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-open class AuthRepository {
-    private val auth = FirebaseAuth.getInstance()
-    private val api = ApiClient.api
+data class AuthResult(val name: String, val level: Int, val xp: Int)
 
-    open suspend fun login(email: String, pass: String): Result<String> = withContext(Dispatchers.IO) {
+open class AuthRepository(
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
+    private val api: ChinesOnlineApi = com.example.chinesonline.data.network.ApiClient.api
+) {
+    open suspend fun login(email: String, pass: String): Result<AuthResult> = withContext(Dispatchers.IO) {
         try {
             val result = auth.signInWithEmailAndPassword(email, pass).await()
             val user = result.user
@@ -22,9 +25,19 @@ open class AuthRepository {
 
             val token = user?.getIdToken(true)?.await()?.token
             if (token != null) {
-                // Notificando backend via Go API
-                api.login()
-                Result.success("Login Realizado com Sucesso")
+                // Notificando backend via Go API e extraindo o nome da resposta
+                val response = api.login()
+                val authResult = if (response.isSuccessful) {
+                    val body = response.body()
+                    AuthResult(
+                        name = body?.name ?: "Player",
+                        level = body?.level ?: 1,
+                        xp = body?.totalScore ?: 0
+                    )
+                } else {
+                    AuthResult("Player", 1, 0)
+                }
+                Result.success(authResult)
             } else {
                 Result.failure(Exception("Falha ao obter token JWT"))
             }
@@ -58,7 +71,7 @@ open class AuthRepository {
                     birthDate = birthDate
                 )
                 api.syncUser(request)
-                Result.success("SUCESSO")
+                Result.success(name)
             } else {
                 Result.failure(Exception("Falha ao obter token JWT"))
             }

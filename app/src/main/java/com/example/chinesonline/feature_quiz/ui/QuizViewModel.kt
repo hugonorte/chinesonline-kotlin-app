@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.first
 
 enum class QuizState {
     LOADING, GAMEPLAY, END_GAME, ERROR
@@ -23,7 +24,10 @@ enum class FeedbackState {
     NONE, CORRECT, INCORRECT
 }
 
-class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
+class QuizViewModel(
+    private val repository: QuizRepository,
+    private val userPreferences: com.example.chinesonline.core.data.local.UserPreferencesRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(QuizState.LOADING)
     val uiState: StateFlow<QuizState> = _uiState.asStateFlow()
 
@@ -39,6 +43,9 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
     private val _currentLevel = MutableStateFlow(1)
     val currentLevel: StateFlow<Int> = _currentLevel.asStateFlow()
 
+    private val _userName = MutableStateFlow<String?>(null)
+    val userName: StateFlow<String?> = _userName.asStateFlow()
+
     private val _roundCount = MutableStateFlow(1)
     val roundCount: StateFlow<Int> = _roundCount.asStateFlow()
 
@@ -51,6 +58,8 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
     
     private val _currentQuestion = MutableStateFlow<QuestionResponse?>(null)
     val currentQuestion: StateFlow<QuestionResponse?> = _currentQuestion.asStateFlow()
+    
+    val pointsPerCorrectAnswer = 10
 
     fun startGame(gameType: String = "pinyin_without_tone") {
         viewModelScope.launch {
@@ -61,12 +70,25 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
             userAnswers.clear()
             
             try {
-                val session = repository.getNewSession(_currentLevel.value, gameType)
+                viewModelScope.launch {
+                    userPreferences.userName.collect { name ->
+                        _userName.value = name
+                    }
+                }
+                val persistedLevel = userPreferences.userLevel.first()
+                val persistedXp = userPreferences.userXp.first()
+                _currentLevel.value = persistedLevel
+                _currentXp.value = persistedXp
+
+                val session = repository.getNewSession(persistedLevel, gameType)
                 currentSession = session
                 currentQuestions = session.questions
                 _currentScore.value = 0
-                _currentXp.value = session.totalScore
+                _currentXp.value = session.totalScore // O backend pode mandar o atualizado
                 _currentLevel.value = session.level
+                
+                // Sincroniza o que veio do backend para o local
+                userPreferences.saveProgress(session.level, session.totalScore)
                 
                 if (currentQuestions.isNotEmpty()) {
                     _currentQuestion.value = currentQuestions[0]
@@ -86,15 +108,13 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
         val question = _currentQuestion.value ?: return
 
         viewModelScope.launch {
-            val isCorrect = withContext(Dispatchers.Default) {
-                val hashed = HashUtils.sha256(answer.trim() + question.salt)
-                hashed == question.hash
-            }
+            val hashed = HashUtils.sha256(answer.trim() + question.salt)
+            val isCorrect = (hashed == question.hash)
             
             userAnswers[question.id.toString()] = answer.trim()
 
             if (isCorrect) {
-                _currentScore.value += 10
+                _currentScore.value += pointsPerCorrectAnswer
                 _feedbackState.value = FeedbackState.CORRECT
             } else {
                 _feedbackState.value = FeedbackState.INCORRECT
@@ -113,6 +133,10 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
                     _currentXp.value = result.totalScore
                     _currentLevel.value = result.currentLevel
                     _levelUp.value = result.leveledUp
+                    
+                    // TDD: Persiste a nova pontuação histórica e o nível
+                    userPreferences.saveProgress(result.currentLevel, result.totalScore)
+                    
                     _uiState.value = QuizState.END_GAME
                 } catch (e: Exception) {
                     _uiState.value = QuizState.ERROR
@@ -127,11 +151,14 @@ class QuizViewModel(private val repository: QuizRepository) : ViewModel() {
     }
     
     companion object {
-        fun provideFactory(repository: QuizRepository): ViewModelProvider.Factory = 
+        fun provideFactory(
+            repository: QuizRepository,
+            userPreferences: com.example.chinesonline.core.data.local.UserPreferencesRepository
+        ): ViewModelProvider.Factory = 
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return QuizViewModel(repository) as T
+                    return QuizViewModel(repository, userPreferences) as T
                 }
             }
     }

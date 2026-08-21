@@ -20,7 +20,22 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String", "BASE_URL", "\"https://chinesonline-go-api-80060965106.us-east1.run.app/api/v1/\"")
+        // Em modo de desenvolvimento (Debug), o app vai buscar a API no servidor Go rodando na sua máquina local
+        buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/api/v1/\"")
+    }
+
+    flavorDimensions += "tier"
+    productFlavors {
+        create("lite") {
+            dimension = "tier"
+            applicationIdSuffix = ".lite"
+            versionNameSuffix = "-Lite"
+        }
+        create("premium") {
+            dimension = "tier"
+            applicationIdSuffix = ".premium"
+            versionNameSuffix = "-Premium"
+        }
     }
 
     buildTypes {
@@ -96,8 +111,12 @@ dependencies {
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
     implementation("com.google.firebase:firebase-appcheck-debug")
 
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     // Testing
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("org.robolectric:robolectric:4.11.1")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation(platform("androidx.compose:compose-bom:2024.04.01"))

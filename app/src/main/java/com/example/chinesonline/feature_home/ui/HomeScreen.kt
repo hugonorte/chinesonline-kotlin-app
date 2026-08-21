@@ -34,16 +34,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chinesonline.R
 import com.example.chinesonline.core.ui.theme.LobsterFontFamily
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chinesonline.ChinesOnlineApplication
+import com.example.chinesonline.feature_home.ui.HomeViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigateToQuiz: () -> Unit,
-    onLogout: () -> Unit,
-    userName: String = "Player",
-    userLevel: Int = 1,
-    userPoints: Int = 0
+    onLogout: () -> Unit
 ) {
+    val context = LocalContext.current
+    val appContainer = (context.applicationContext as ChinesOnlineApplication).container
+    val viewModel: HomeViewModel = viewModel(
+        factory = HomeViewModel.provideFactory(appContainer.userPreferencesRepository)
+    )
+    
+    val userLevel by viewModel.userLevel.collectAsState()
+    val userPoints by viewModel.userXp.collectAsState()
+    val storedName by viewModel.userName.collectAsState()
+    val displayName = storedName?.takeIf { it.isNotBlank() } ?: "Player"
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         DisposableEffect(view) {
@@ -119,7 +134,7 @@ fun HomeScreen(
                     color = Color.White
                 )
                 Text(
-                    text = userName,
+                    text = displayName,
                     style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
                     color = Color.White
                 )
@@ -180,7 +195,7 @@ fun HomeScreen(
                 onClick = onNavigateToQuiz,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 32.dp)
+                    .padding(bottom = 16.dp)
                     .height(56.dp),
                 shape = RoundedCornerShape(28.dp)
             ) {
@@ -190,7 +205,41 @@ fun HomeScreen(
                     fontWeight = FontWeight.Bold
                 )
             }
+
+            val message = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
+            val appConfig = com.example.chinesonline.core.config.LocalAppConfig.current
+            
+            if (message.value.isNotEmpty()) {
+                Text(
+                    text = message.value, 
+                    color = Color.White, 
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 16.dp).testTag("status_message")
+                )
+            }
+
+            Button(
+                onClick = {
+                    if (appConfig.subscriptionStatus().hasAdvancedAccess()) {
+                        message.value = "Abrindo configurações avançadas..."
+                    } else {
+                        message.value = "Funcionalidade exclusiva da versão Premium"
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp)
+                    .height(56.dp),
+                shape = RoundedCornerShape(28.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+            ) {
+                Text(
+                    text = "Configurações Avançadas",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
         }
     }
-}
 }

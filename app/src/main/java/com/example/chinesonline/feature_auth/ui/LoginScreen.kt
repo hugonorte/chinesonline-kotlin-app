@@ -30,11 +30,18 @@ import com.example.chinesonline.R
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel = viewModel(),
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToHome: () -> Unit
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val appContainer = (context.applicationContext as com.example.chinesonline.ChinesOnlineApplication).container
+    val viewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = AuthViewModel.provideFactory(
+            com.example.chinesonline.feature_auth.data.AuthRepository(),
+            appContainer.userPreferencesRepository
+        )
+    )
     val loginState by viewModel.loginState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val loginSuccess by viewModel.loginSuccess.collectAsState()

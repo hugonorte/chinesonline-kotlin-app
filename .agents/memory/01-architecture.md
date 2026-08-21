@@ -4,27 +4,30 @@
 This project is a mobile application built with **Flutter** and powered by **Google Firebase**. It functions as an interactive quiz game for learning Chinese characters and words.
 
 ## 2. Core Technologies
-- **Mobile App**: Flutter (Dart)
-- **Backend/BaaS**: Firebase (Auth, Firestore, Analytics)
-- **State Management**: Riverpod (Recommended) or BLoC
-- **Routing**: GoRouter
+- **Mobile App**: Android Nativo (Kotlin)
+- **UI Toolkit**: Jetpack Compose
+- **Backend/BaaS**: API em Go + Firebase (Auth, Analytics, App Check)
+- **State Management**: ViewModel + StateFlow
+- **Roteamento**: Jetpack Navigation Compose
 
 ## 3. Directory Structure
 We follow a **Feature-First Architecture** to keep the codebase modular and scalable.
 
 ```
-lib/
-├── core/                   # Componentes globais e configurações
-│   ├── theme/              # Temas, cores, tipografia
-│   ├── utils/              # Funções auxiliares e helpers
-│   ├── constants/          # Strings, assets paths
-│   └── firebase/           # Inicialização e configs do Firebase
-├── features/               # Módulos principais do app
-│   ├── auth/               # Autenticação (Login, Registro)
-│   ├── quiz/               # Lógica do jogo (Múltipla escolha, Input de Pinyin)
-│   ├── profile/            # Perfil e histórico de pontuação
-└── main.dart               # Entrypoint da aplicação
+app/
+├── src/
+│   ├── main/                 # Código comum a ambas as versões (Lite e Premium)
+│   │   ├── java/com/example/chinesonline/
+│   │   │   ├── core/         # Componentes globais, temas (Compose), utils
+│   │   │   └── features/     # Módulos principais (auth, quiz, profile)
+│   ├── lite/                 # Assets, configs e injeções exclusivas da versão Lite
+│   └── premium/              # Telas avançadas e lógicas exclusivas da versão Premium
 ```
+
+## 4. Product Flavors & Source Sets Strategy
+Para gerar duas versões do app a partir do mesmo repositório:
+- **Flavors**: `lite` e `premium` configurados no `build.gradle.kts`.
+- **Constraint de Arquitetura**: NUNCA utilize if/else (`if (isPremium)`) no código do `src/main` para controlar funcionalidades. Utilize princípios **SOLID** (Polimorfismo, Inversão de Dependência) com interfaces no `main` sendo implementadas diferentemente nos source sets `lite` e `premium`. Isso evita o vazamento de código pago no APK gratuito.
 
 ## 4. Key Application Layers (Inside Features)
 Each feature directory contains:

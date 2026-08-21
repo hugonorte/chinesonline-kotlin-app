@@ -8,6 +8,7 @@ import com.example.chinesonline.feature_quiz.data.QuizRepository
 
 interface AppContainer {
     val quizRepository: QuizRepository
+    val userPreferencesRepository: com.example.chinesonline.core.data.local.UserPreferencesRepository
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -20,6 +21,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     override val quizRepository: QuizRepository by lazy {
-        QuizRepository(api, database.ideogramStatDao())
+        com.example.chinesonline.feature_quiz.data.QuizRepositoryImpl(api, database.ideogramStatDao())
+    }
+
+    override val userPreferencesRepository: com.example.chinesonline.core.data.local.UserPreferencesRepository by lazy {
+        com.example.chinesonline.core.data.local.UserPreferencesRepositoryImpl(context)
     }
 }

@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import com.example.chinesonline.feature_auth.ui.LoginScreen
 import com.example.chinesonline.feature_auth.ui.RegisterScreen
 import com.example.chinesonline.feature_auth.ui.SplashScreen
@@ -14,6 +16,11 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val scope = rememberCoroutineScope()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val appContainer = (context.applicationContext as com.example.chinesonline.ChinesOnlineApplication).container
+    val userPrefs = appContainer.userPreferencesRepository
+    val quizRepo = appContainer.quizRepository
 
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") {
@@ -80,6 +87,10 @@ fun AppNavigation() {
                     navController.navigate("quiz")
                 },
                 onLogout = {
+                    scope.launch {
+                        userPrefs.clear()
+                        quizRepo.clearLocalData()
+                    }
                     FirebaseAuth.getInstance().signOut()
                     navController.navigate("login") { popUpTo(0) }
                 }
@@ -88,6 +99,10 @@ fun AppNavigation() {
         composable("quiz") {
             QuizScreen(
                 onLogout = {
+                    scope.launch {
+                        userPrefs.clear()
+                        quizRepo.clearLocalData()
+                    }
                     FirebaseAuth.getInstance().signOut()
                     navController.navigate("login") { popUpTo(0) }
                 }

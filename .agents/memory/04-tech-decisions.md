@@ -2,21 +2,16 @@
 
 This document outlines the rationale behind the primary technologies chosen for the ChinesOnline app.
 
-## 1. Flutter
-**Why**: Allows building high-quality, natively compiled applications for iOS, Android, and Web from a single codebase. Given the interactive nature of a gamified quiz app, Flutter's rich widget system and smooth animations are ideal.
-**Constraint**: Ensure no platform-specific code (e.g., native Android/iOS channels) is written unless absolutely necessary.
+## 1. Android Nativo (Kotlin) & Jetpack Compose
+**Why**: Jetpack Compose permite construir interfaces dinâmicas e de alta performance de forma declarativa usando puramente Kotlin.
+**Constraint**: Toda a UI deve ser feita em Compose (sem arquivos XML).
 
-## 2. Google Firebase
-**Why**: Provides a complete Backend-as-a-Service (BaaS).
-- **Firestore**: Perfect for real-time leaderboards, storing ideograms, and syncing user data. Document-based structure fits the quiz data nicely.
-- **Firebase Auth**: Ready-to-use secure authentication flow.
-**Constraint**: Data reading is high-frequency during gameplay; optimize queries and cache locally when possible to reduce Firestore read costs.
+## 2. Abordagem de Product Flavors (Lite vs Premium)
+**Why**: Manter um único repositório reduz a duplicação de código. Gerar dois APKs/AABs isola o código da versão Premium para fins de segurança, garantindo que o usuário Lite não tenha o código de configurações avançadas no celular.
+**Constraint**: É estritamente proibido o uso de `if (isPremium)`. As diferenças devem ser resolvidas via interfaces implementadas nos *source sets* correspondentes e resolvidas via Injeção de Dependências.
 
-## 3. Game Logic Strategy
-**Why Difficulty Levels 1-8**: Progressive difficulty enhances user engagement.
-- Level 1-2: Multiple Choice builds confidence and initial recognition.
-- Level 3-8: Pinyin text input reinforces active recall and pronunciation spelling.
-**Implementation Detail**: The Quiz Engine must validate string inputs dynamically (e.g., ignoring case, trimming spaces).
+## 3. Google Firebase & Backend Go
+**Why**: Firebase Auth cuida do ciclo de vida complexo do usuário. O Backend em Go faz a validação rigorosa (server-side validation) das respostas do jogo e evita trapaças de rede.
 
-## 4. State Management (Riverpod / BLoC)
-**Why**: Passing state manually in a quiz game with timers, scores, and changing UI formats is error-prone. A robust state management solution ensures the UI simply reacts to the current game state (e.g., `GameState.playing`, `GameState.levelComplete`).
+## 4. State Management (ViewModel + StateFlow)
+**Why**: Passar o estado manualmente em um jogo com timers e pontuações é passível de erros. Usar a arquitetura MVVM do Android com `StateFlow` garante que a UI em Compose apenas reaja ao estado atual (`GameState.Playing`, `GameState.LevelComplete`).

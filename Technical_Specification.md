@@ -24,6 +24,12 @@ Este documento serve como a "Fonte da Verdade" escrita pelo **@pm** para os agen
 - **Roteamento**: Jetpack Navigation Compose.
 
 ### 1.2 Integração com Backend e Serviços
+
+### 1.3 Estratégia de Versões (Lite e Premium)
+- **Abordagem**: Utilização de **Product Flavors** no Gradle para gerar dois binários distintos (APKs/AABs) a partir do mesmo repositório:
+  - `ChinesOnline - Lite` (`com.example.chinesonline.lite`)
+  - `ChinesOnline - Premium` (`com.example.chinesonline.premium`)
+- **Arquitetura e Segurança**: É estritamente proibido o uso de condicionais de controle (ex: `if (isPremium)`) no código comum (`src/main`) para liberar funcionalidades. A diferenciação de comportamento e a injeção de dependências das configurações avançadas devem ocorrer através de interfaces abstratas. As implementações reais e telas avançadas devem existir fisicamente apenas no *sourceSet* `src/premium`, garantindo que não haja vazamento de lógicas pagas no binário gratuito.
 - **Backend Principal**: API REST em Go (Golang) hospedada no Google Cloud Run.
 - **Autenticação**: Firebase Authentication (Email/Senha, Google Sign-In). O app Android envia o JWT do Firebase para a API em Go autorizar as requisições.
 - **Analytics & Segurança**: Google Analytics for Firebase e **Firebase App Check** (Play Integrity).

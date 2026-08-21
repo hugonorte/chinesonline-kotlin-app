@@ -4,11 +4,18 @@ import com.example.chinesonline.core.data.local.IdeogramStatDao
 import com.example.chinesonline.core.data.local.LocalIdeogramStat
 import com.example.chinesonline.data.network.ChinesOnlineApi
 
-class QuizRepository(
+interface QuizRepository {
+    suspend fun getNewSession(level: Int, gameType: String): SessionResponse
+    suspend fun submitSession(sessionId: String, answers: Map<String, String>): SubmitSessionResponse
+    suspend fun updateLocalStat(question: QuestionResponse, gameType: String, isCorrect: Boolean)
+    suspend fun clearLocalData()
+}
+
+class QuizRepositoryImpl(
     private val api: ChinesOnlineApi,
     private val dao: IdeogramStatDao
-) {
-    suspend fun getNewSession(level: Int, gameType: String): SessionResponse {
+) : QuizRepository {
+    override suspend fun getNewSession(level: Int, gameType: String): SessionResponse {
         val dueIdeograms = dao.getDueIdeograms(gameType, System.currentTimeMillis(), 10)
         
         val localQuestions = dueIdeograms.map {
@@ -46,7 +53,7 @@ class QuizRepository(
         )
     }
 
-    suspend fun submitSession(sessionId: String, answers: Map<String, String>): SubmitSessionResponse {
+    override suspend fun submitSession(sessionId: String, answers: Map<String, String>): SubmitSessionResponse {
         if (sessionId.startsWith("local_")) {
             return SubmitSessionResponse(
                 score = answers.size * 10,
@@ -59,7 +66,7 @@ class QuizRepository(
         return api.submitSession(sessionId, SubmitSessionRequest(answers))
     }
 
-    suspend fun updateLocalStat(question: QuestionResponse, gameType: String, isCorrect: Boolean) {
+    override suspend fun updateLocalStat(question: QuestionResponse, gameType: String, isCorrect: Boolean) {
         val id = "${question.id}_${gameType}"
         val stat = dao.getStatById(id) ?: LocalIdeogramStat(
             id = id,
@@ -93,5 +100,9 @@ class QuizRepository(
         stat.nextReviewAt = srsResult.nextReviewAt
 
         dao.upsertStat(stat)
+    }
+
+    override suspend fun clearLocalData() {
+        dao.clearAll()
     }
 }

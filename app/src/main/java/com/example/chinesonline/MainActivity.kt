@@ -17,11 +17,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ChinesOnlineTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                androidx.compose.runtime.CompositionLocalProvider(
+                    com.example.chinesonline.core.config.LocalAppConfig provides (application as ChinesOnlineApplication).appConfig
                 ) {
-                    AppNavigation()
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        AppNavigation()
+                    }
                 }
             }
         }

@@ -18,4 +18,7 @@ interface IdeogramStatDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertStat(stat: LocalIdeogramStat)
+
+    @Query("DELETE FROM ideogram_stats")
+    suspend fun clearAll()
 }

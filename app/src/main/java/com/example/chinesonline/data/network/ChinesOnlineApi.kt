@@ -14,6 +14,12 @@ data class SyncRequest(
     @SerializedName("birth_date") val birthDate: String
 )
 
+data class LoginResponse(
+    @SerializedName("name") val name: String,
+    @SerializedName("level") val level: Int?,
+    @SerializedName("total_score") val totalScore: Int?
+)
+
 interface ChinesOnlineApi {
     @POST("users/sync")
     suspend fun syncUser(
@@ -21,7 +27,7 @@ interface ChinesOnlineApi {
     )
 
     @POST("auth/login")
-    suspend fun login()
+    suspend fun login(): retrofit2.Response<LoginResponse>
 
     @retrofit2.http.GET("sessions/new")
     suspend fun getNewSession(

@@ -28,13 +28,13 @@ class AuthViewModelTest {
         var isEmailVerified = true
         var shouldFailRegister = false
 
-        override suspend fun login(email: String, pass: String): Result<String> {
+        override suspend fun login(email: String, pass: String): Result<com.example.chinesonline.feature_auth.data.AuthResult> {
             return if (shouldFailLogin) {
                 Result.failure(Exception("Login failed"))
             } else if (!isEmailVerified) {
                 Result.failure(Exception("email_not_verified"))
             } else {
-                Result.success("Login Realizado com Sucesso")
+                Result.success(com.example.chinesonline.feature_auth.data.AuthResult("Login Realizado com Sucesso", 1, 0))
             }
         }
 

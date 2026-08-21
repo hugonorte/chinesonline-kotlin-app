@@ -57,7 +57,7 @@ class QuizScreenTest {
     @Test
     fun quizScreen_gameplayRendersCorrectly() {
         composeTestRule.setContent {
-            QuizScreen(onNavigateBack = {})
+            QuizScreen(onLogout = {})
         }
 
         // Aguarda os 1500ms do Loading (simulação de delay) e verifica renderização inicial do Gameplay
@@ -77,7 +77,7 @@ class QuizScreenTest {
     @Test
     fun quizScreen_submitCorrectAnswerShowsFeedback() {
         composeTestRule.setContent {
-            QuizScreen(onNavigateBack = {})
+            QuizScreen(onLogout = {})
         }
 
         composeTestRule.waitUntil(timeoutMillis = 5000) {
@@ -90,6 +90,6 @@ class QuizScreenTest {
 
         // Após Enviar, o card de feedback deve aparecer
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.correct_feedback)).assertExists()
-        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.points_earned, 20)).assertExists()
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.points_earned, 10)).assertExists()
     }
 }

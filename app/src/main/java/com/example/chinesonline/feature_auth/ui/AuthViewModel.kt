@@ -7,8 +7,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+import androidx.lifecycle.ViewModelProvider
+import com.example.chinesonline.core.data.local.UserPreferencesRepository
+
 class AuthViewModel(
-    private val repo: AuthRepository = AuthRepository()
+    private val repo: AuthRepository = AuthRepository(),
+    private val userPreferences: UserPreferencesRepository? = null
 ) : ViewModel() {
 
     private val _loginState = MutableStateFlow<String?>(null)
@@ -25,7 +29,11 @@ class AuthViewModel(
         viewModelScope.launch {
             val result = repo.login(email, pass)
             _isLoading.value = false
-            result.onSuccess {
+            result.onSuccess { authResult ->
+                if (authResult.name.isNotBlank()) {
+                    userPreferences?.saveUserName(authResult.name)
+                }
+                userPreferences?.saveProgress(authResult.level, authResult.xp)
                 _loginSuccess.value = true
             }.onFailure {
                 _loginState.value = it.message
@@ -41,7 +49,10 @@ class AuthViewModel(
         viewModelScope.launch {
             val result = repo.register(name, email, pass, country, birthDate)
             _isLoading.value = false
-            result.onSuccess {
+            result.onSuccess { registeredName ->
+                if (registeredName.isNotBlank()) {
+                    userPreferences?.saveUserName(registeredName)
+                }
                 _registerSuccess.value = true
             }.onFailure {
                 _loginState.value = it.message // Reusing loginState for errors as Snackbar
@@ -85,5 +96,18 @@ class AuthViewModel(
                 _loginState.value = it.message
             }
         }
+    }
+
+    companion object {
+        fun provideFactory(
+            repo: AuthRepository,
+            userPreferences: UserPreferencesRepository
+        ): ViewModelProvider.Factory = 
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return AuthViewModel(repo, userPreferences) as T
+                }
+            }
     }
 }
