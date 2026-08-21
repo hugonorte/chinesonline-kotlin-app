@@ -11,8 +11,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.chinesonline.core.data.local.UserPreferencesRepository
 
 class AuthViewModel(
-    private val repo: AuthRepository = AuthRepository(),
-    private val userPreferences: UserPreferencesRepository? = null
+    private val repo: AuthRepository,
+    private val userPreferences: UserPreferencesRepository? = null,
+    private val quizRepository: com.example.chinesonline.feature_quiz.data.QuizRepository? = null
 ) : ViewModel() {
 
     private val _loginState = MutableStateFlow<String?>(null)
@@ -34,6 +35,7 @@ class AuthViewModel(
                     userPreferences?.saveUserName(authResult.name)
                 }
                 userPreferences?.saveProgress(authResult.level, authResult.xp)
+                quizRepository?.clearLocalData()
                 _loginSuccess.value = true
             }.onFailure {
                 _loginState.value = it.message
@@ -101,12 +103,13 @@ class AuthViewModel(
     companion object {
         fun provideFactory(
             repo: AuthRepository,
-            userPreferences: UserPreferencesRepository
+            userPreferences: UserPreferencesRepository,
+            quizRepo: com.example.chinesonline.feature_quiz.data.QuizRepository? = null
         ): ViewModelProvider.Factory = 
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return AuthViewModel(repo, userPreferences) as T
+                    return AuthViewModel(repo, userPreferences, quizRepo) as T
                 }
             }
     }

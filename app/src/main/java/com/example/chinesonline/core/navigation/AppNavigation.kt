@@ -90,9 +90,9 @@ fun AppNavigation() {
                     scope.launch {
                         userPrefs.clear()
                         quizRepo.clearLocalData()
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate("login") { popUpTo(0) }
                     }
-                    FirebaseAuth.getInstance().signOut()
-                    navController.navigate("login") { popUpTo(0) }
                 }
             )
         }
@@ -102,9 +102,9 @@ fun AppNavigation() {
                     scope.launch {
                         userPrefs.clear()
                         quizRepo.clearLocalData()
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate("login") { popUpTo(0) }
                     }
-                    FirebaseAuth.getInstance().signOut()
-                    navController.navigate("login") { popUpTo(0) }
                 }
             )
         }

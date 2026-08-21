@@ -39,7 +39,8 @@ fun LoginScreen(
     val viewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = AuthViewModel.provideFactory(
             com.example.chinesonline.feature_auth.data.AuthRepository(),
-            appContainer.userPreferencesRepository
+            appContainer.userPreferencesRepository,
+            appContainer.quizRepository
         )
     )
     val loginState by viewModel.loginState.collectAsState()
