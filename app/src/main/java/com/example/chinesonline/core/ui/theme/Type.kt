@@ -19,6 +19,10 @@ val LobsterFontFamily = FontFamily(
     androidx.compose.ui.text.font.Font(R.font.lobster)
 )
 
+val OffsideFontFamily = FontFamily(
+    androidx.compose.ui.text.font.Font(R.font.offside_regular)
+)
+
 // Nota: "Vend Sans" e "Sansation" não estão nativamente na lista standard do Google Fonts Provider para todos os dispositivos.
 // Usaremos fallback temporário do Google Fonts com nomes similares, e a fonte final poderá ser baixada no formato TTF.
 // Substituindo Vend Sans por Varela Round e Sansation por pt sans como fallback até o carregamento local.

@@ -77,11 +77,7 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = stringResource(id = R.string.app_name),
-                        fontFamily = LobsterFontFamily,
-                        color = Color.White
-                    )
+                    com.example.chinesonline.core.ui.components.AppHeaderTitle()
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Black

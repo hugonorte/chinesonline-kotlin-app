@@ -110,12 +110,33 @@ fun LoginScreen(
                     .fillMaxSize()
                     .padding(24.dp)
             ) {
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    style = MaterialTheme.typography.displayLarge,
-                    fontFamily = LobsterFontFamily,
-                    color = Color.White
-                )
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        style = MaterialTheme.typography.displayLarge,
+                        fontFamily = LobsterFontFamily,
+                        color = Color.White
+                    )
+                    if (com.example.chinesonline.BuildConfig.FLAVOR == "lite") {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = Color(0xFF3E64A0),
+                                    shape = RoundedCornerShape(50)
+                                )
+                                .padding(horizontal = 6.dp, vertical = 2.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Lite",
+                                color = Color.White,
+                                fontFamily = com.example.chinesonline.core.ui.theme.OffsideFontFamily,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
