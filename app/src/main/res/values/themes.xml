@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.ChinesOnline" parent="@android:style/Theme.Material.Light.NoActionBar">
+    <style name="Theme.ChinesOnline" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Define a cor de fundo nativa (antes do Compose carregar) -->
         <item name="android:windowBackground">#560808</item>
     </style>

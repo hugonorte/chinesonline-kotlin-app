@@ -110,4 +110,20 @@ open class AuthRepository(
             Result.failure(e)
         }
     }
+
+    open suspend fun deleteAccount(): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.deleteAccount()
+            if (response.isSuccessful) {
+                // Ao excluir a conta, o backend também deverá excluir no Firebase.
+                // Mas, como precaução de estado local, fazemos o signout
+                auth.signOut()
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Erro ao excluir conta no backend: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

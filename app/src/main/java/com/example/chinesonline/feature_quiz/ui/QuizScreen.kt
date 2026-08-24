@@ -43,7 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizScreen(
-    onLogout: () -> Unit
+    onSettingsClick: () -> Unit
 ) {
     val context = LocalContext.current
     val appContainer = (context.applicationContext as ChinesOnlineApplication).container
@@ -107,16 +107,11 @@ fun QuizScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    com.example.chinesonline.core.ui.components.AppHeaderTitle()
+                    com.example.chinesonline.core.ui.components.AppHeaderTitle(onSettingsClick = onSettingsClick)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Black
-                ),
-                actions = {
-                    IconButton(onClick = onLogout) {
-                        Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = stringResource(id = R.string.exit_content_desc), tint = Color.White)
-                    }
-                }
+                )
             )
         },
         containerColor = QuizBackground

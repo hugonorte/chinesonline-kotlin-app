@@ -40,4 +40,7 @@ interface ChinesOnlineApi {
         @retrofit2.http.Path("id") sessionId: String,
         @Body request: com.example.chinesonline.feature_quiz.data.SubmitSessionRequest
     ): com.example.chinesonline.feature_quiz.data.SubmitSessionResponse
+
+    @retrofit2.http.DELETE("users/me")
+    suspend fun deleteAccount(): retrofit2.Response<Unit>
 }

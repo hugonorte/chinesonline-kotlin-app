@@ -44,4 +44,20 @@
     <string name="password_reset_success">Senha alterada com sucesso!</string>
     <string name="welcome_message">Bem-vindo(a),</string>
     <string name="start_game_button">Iniciar Jogo</string>
+    <string name="settings_title">Configurações</string>
+    <string name="settings_legal_privacy">Legal e Privacidade</string>
+    <string name="settings_privacy_policy">Política de Privacidade</string>
+    <string name="settings_account">Conta</string>
+    <string name="settings_logout">Sair da Conta (Logout)</string>
+    <string name="settings_delete_account">Excluir Minha Conta</string>
+    <string name="settings_delete_account_title">Excluir Conta</string>
+    <string name="settings_delete_account_desc">Você tem certeza de que deseja excluir sua conta permanentemente? Todo o seu progresso será perdido. Esta ação não pode ser desfeita.</string>
+    <string name="settings_delete_confirm">Excluir</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_language_en">Inglês</string>
+    <string name="settings_language_es">Espanhol</string>
+    <string name="settings_language_pt">Português (BR)</string>
+    <string name="advanced_settings">Configurações Avançadas</string>
+    <string name="lite_blocked_feature">Funcionalidade exclusiva da versão Premium</string>
+    <string name="settings_terms_of_use">Termos de Uso</string>
 </resources>

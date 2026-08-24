@@ -45,4 +45,20 @@
     <string name="password_reset_success">Password changed successfully!</string>
     <string name="welcome_message">Welcome</string>
     <string name="start_game_button">Start Game</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_legal_privacy">Legal and Privacy</string>
+    <string name="settings_privacy_policy">Privacy Policy</string>
+    <string name="settings_account">Account</string>
+    <string name="settings_logout">Logout</string>
+    <string name="settings_delete_account">Delete My Account</string>
+    <string name="settings_delete_account_title">Delete Account</string>
+    <string name="settings_delete_account_desc">Are you sure you want to permanently delete your account? All your progress will be lost. This action cannot be undone.</string>
+    <string name="settings_delete_confirm">Delete</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_es">Spanish</string>
+    <string name="settings_language_pt">Portuguese (BR)</string>
+    <string name="advanced_settings">Advanced Settings</string>
+    <string name="lite_blocked_feature">Feature exclusive to Premium version</string>
+    <string name="settings_terms_of_use">Terms of Use</string>
 </resources>

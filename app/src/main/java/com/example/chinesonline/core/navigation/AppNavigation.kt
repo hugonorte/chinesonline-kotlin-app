@@ -11,12 +11,14 @@ import com.example.chinesonline.feature_auth.ui.RegisterScreen
 import com.example.chinesonline.feature_auth.ui.SplashScreen
 import com.example.chinesonline.feature_home.ui.HomeScreen
 import com.example.chinesonline.feature_quiz.ui.QuizScreen
+import com.example.chinesonline.feature_settings.ui.SettingsScreen
+import com.example.chinesonline.feature_settings.ui.SettingsViewModel
+import com.example.chinesonline.feature_auth.data.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
     val appContainer = (context.applicationContext as com.example.chinesonline.ChinesOnlineApplication).container
     val userPrefs = appContainer.userPreferencesRepository
@@ -86,25 +88,33 @@ fun AppNavigation() {
                 onNavigateToQuiz = {
                     navController.navigate("quiz")
                 },
-                onLogout = {
-                    scope.launch {
-                        userPrefs.clear()
-                        quizRepo.clearLocalData()
-                        FirebaseAuth.getInstance().signOut()
-                        navController.navigate("login") { popUpTo(0) }
-                    }
+                onSettingsClick = {
+                    navController.navigate("settings")
                 }
             )
         }
         composable("quiz") {
             QuizScreen(
-                onLogout = {
-                    scope.launch {
-                        userPrefs.clear()
-                        quizRepo.clearLocalData()
-                        FirebaseAuth.getInstance().signOut()
-                        navController.navigate("login") { popUpTo(0) }
-                    }
+                onSettingsClick = {
+                    navController.navigate("settings")
+                }
+            )
+        }
+        composable("settings") {
+            val viewModel: SettingsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                factory = SettingsViewModel.provideFactory(
+                    AuthRepository(),
+                    quizRepo,
+                    userPrefs
+                )
+            )
+            SettingsScreen(
+                viewModel = viewModel,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToLogin = {
+                    navController.navigate("login") { popUpTo(0) }
                 }
             )
         }

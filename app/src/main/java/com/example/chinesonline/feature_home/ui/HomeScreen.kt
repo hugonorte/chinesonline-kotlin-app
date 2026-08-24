@@ -46,7 +46,7 @@ import androidx.compose.runtime.getValue
 @Composable
 fun HomeScreen(
     onNavigateToQuiz: () -> Unit,
-    onLogout: () -> Unit
+    onSettingsClick: () -> Unit
 ) {
     val context = LocalContext.current
     val appContainer = (context.applicationContext as ChinesOnlineApplication).container
@@ -77,16 +77,11 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    com.example.chinesonline.core.ui.components.AppHeaderTitle()
+                    com.example.chinesonline.core.ui.components.AppHeaderTitle(onSettingsClick = onSettingsClick)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Black
-                ),
-                actions = {
-                    IconButton(onClick = onLogout) {
-                        Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = stringResource(id = R.string.exit_content_desc), tint = Color.White)
-                    }
-                }
+                )
             )
         },
         containerColor = Color.Transparent
@@ -219,7 +214,7 @@ fun HomeScreen(
                     if (appConfig.subscriptionStatus().hasAdvancedAccess()) {
                         message.value = "Abrindo configurações avançadas..."
                     } else {
-                        message.value = "Funcionalidade exclusiva da versão Premium"
+                        message.value = context.getString(R.string.lite_blocked_feature)
                     }
                 },
                 modifier = Modifier
@@ -230,7 +225,7 @@ fun HomeScreen(
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
             ) {
                 Text(
-                    text = "Configurações Avançadas",
+                    text = stringResource(id = R.string.advanced_settings),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
