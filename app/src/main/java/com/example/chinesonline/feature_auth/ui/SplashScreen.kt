@@ -48,7 +48,7 @@ fun SplashScreen(onNavigateToLogin: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "ChinêsOnline",
+            text = "ChinesOnline",
             style = MaterialTheme.typography.displayLarge,
             color = Color.White,
             modifier = Modifier.alpha(alpha.value)

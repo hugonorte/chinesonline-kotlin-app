@@ -113,7 +113,7 @@ fun LoginScreen(
             ) {
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = stringResource(id = R.string.app_name),
+                        text = "ChinesOnline",
                         style = MaterialTheme.typography.displayLarge,
                         fontFamily = LobsterFontFamily,
                         color = Color.White

@@ -35,7 +35,7 @@ fun AppHeaderTitle(onSettingsClick: (() -> Unit)? = null) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = stringResource(id = R.string.app_name),
+                text = "ChinesOnline",
                 fontFamily = LobsterFontFamily,
                 color = Color.White
             )

@@ -104,7 +104,7 @@ fun RegisterScreen(
             ) {
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
-                    text = stringResource(id = R.string.app_name),
+                    text = "ChinesOnline",
                     style = MaterialTheme.typography.displayLarge,
                     fontFamily = LobsterFontFamily,
                     color = Color.White
