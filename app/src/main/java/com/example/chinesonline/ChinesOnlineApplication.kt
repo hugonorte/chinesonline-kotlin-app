@@ -20,6 +20,7 @@ class ChinesOnlineApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
+        com.example.chinesonline.ads.AdManager.initAdMob(this)
         
         if (BuildConfig.DEBUG) {
             FirebaseAppCheck.getInstance().installAppCheckProviderFactory(

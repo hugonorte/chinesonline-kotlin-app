@@ -39,6 +39,7 @@ import com.example.chinesonline.R
 import com.example.chinesonline.ChinesOnlineApplication
 import com.example.chinesonline.feature_quiz.data.QuestionResponse
 import androidx.compose.ui.platform.LocalContext
+import com.example.chinesonline.ads.BannerAd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,6 +114,9 @@ fun QuizScreen(
                     containerColor = Color.Black
                 )
             )
+        },
+        bottomBar = {
+            BannerAd(modifier = Modifier.fillMaxWidth())
         },
         containerColor = QuizBackground
     ) { paddingValues ->

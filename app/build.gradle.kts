@@ -5,6 +5,17 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+import java.util.Properties
+import java.io.FileInputStream
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+val admobAppId: String = localProperties.getProperty("ADMOB_APP_ID") ?: "ca-app-pub-3940256099942544~3347511713"
+val admobBannerId: String = localProperties.getProperty("ADMOB_BANNER_ID") ?: "ca-app-pub-3940256099942544/6300978111"
+
 android {
     namespace = "com.example.chinesonline"
     compileSdk = 34
@@ -30,6 +41,8 @@ android {
             dimension = "tier"
             applicationIdSuffix = ".lite"
             versionNameSuffix = "-Lite"
+            manifestPlaceholders["admob_app_id"] = admobAppId
+            buildConfigField("String", "ADMOB_BANNER_ID", "\"$admobBannerId\"")
         }
         create("premium") {
             dimension = "tier"
@@ -128,6 +141,9 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // AdMob - Incluído apenas na compilação do flavor 'lite'
+    "liteImplementation"("com.google.android.gms:play-services-ads:23.0.0")
 }
 
 kotlin {
