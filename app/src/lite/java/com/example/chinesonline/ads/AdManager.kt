@@ -22,7 +22,11 @@ fun BannerAd(modifier: Modifier = Modifier) {
         modifier = modifier,
         factory = { context ->
             AdView(context).apply {
-                setAdSize(AdSize.BANNER)
+                val displayMetrics = context.resources.displayMetrics
+                val screenWidthDp = (displayMetrics.widthPixels / displayMetrics.density).toInt()
+                val adaptiveAdSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, screenWidthDp)
+                
+                setAdSize(adaptiveAdSize)
                 adUnitId = BuildConfig.ADMOB_BANNER_ID
                 loadAd(AdRequest.Builder().build())
             }

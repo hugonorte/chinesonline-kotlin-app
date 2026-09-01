@@ -21,7 +21,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.chinesonline"
+        applicationId = "br.com.chinesonline"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
